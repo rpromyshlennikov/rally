@@ -293,8 +293,8 @@ class OSClientsTestCase(test.TestCase):
                 "token": self.fake_keystone.auth_token,
                 "endpoint_url": self.service_catalog.url_for.return_value,
                 "timeout": cfg.CONF.openstack_client_http_timeout,
-                "insecure": self.credential.insecure,
-                "ca_cert": self.credential.cacert,
+                "insecure": self.credential.https_insecure,
+                "ca_cert": self.credential.https_cacert,
                 "username": self.credential.username,
                 "password": self.credential.password,
                 "tenant_name": self.credential.tenant_name,
@@ -456,8 +456,8 @@ class OSClientsTestCase(test.TestCase):
                 "os_auth_token": self.fake_keystone.auth_token,
                 "ironic_url": self.service_catalog.url_for.return_value,
                 "timeout": cfg.CONF.openstack_client_http_timeout,
-                "insecure": self.credential.insecure,
-                "cacert": self.credential.cacert
+                "insecure": self.credential.https_insecure,
+                "cacert": self.credential.https_cacert
             }
             mock_ironic.client.get_client.assert_called_once_with("1", **kw)
             self.assertEqual(fake_ironic, self.clients.cache["ironic"])
@@ -500,7 +500,7 @@ class OSClientsTestCase(test.TestCase):
                 "os_project_name": self.credential.tenant_name,
                 "os_project_id": self.fake_keystone.auth_tenant_id,
                 "os_auth_url": self.credential.auth_url,
-                "insecure": self.credential.insecure,
+                "insecure": self.credential.https_insecure,
             }}}
             mock_zaqar.client.Client.assert_called_once_with(
                 url=fake_zaqar_url, version=1.1, conf=conf)
@@ -521,8 +521,8 @@ class OSClientsTestCase(test.TestCase):
                 "auth_url": self.credential.auth_url,
                 "region_name": self.credential.region_name,
                 "timeout": cfg.CONF.openstack_client_http_timeout,
-                "insecure": self.credential.insecure,
-                "cacert": self.credential.cacert
+                "insecure": self.credential.https_insecure,
+                "cacert": self.credential.https_cacert
             }
             mock_trove.client.Client.assert_called_once_with("1.0", **kw)
             self.assertEqual(fake_trove, self.clients.cache["trove"])
@@ -597,7 +597,7 @@ class OSClientsTestCase(test.TestCase):
                 "url": "http://fake.to:1/fake",
                 "aws_access_key_id": "fake_access",
                 "aws_secret_access_key": "fake_secret",
-                "is_secure": self.credential.insecure,
+                "is_secure": self.credential.https_insecure,
             }
             mock_boto.connect_ec2_endpoint.assert_called_once_with(**kw)
             self.assertEqual(fake_ec2, self.clients.cache["ec2"])
