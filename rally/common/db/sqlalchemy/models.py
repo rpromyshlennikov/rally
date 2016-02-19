@@ -68,6 +68,9 @@ class Deployment(BASE, RallyBase):
         default=None,
     )
     name = sa.Column(sa.String(255), unique=True)
+    type = sa.Column(
+        sa.String(255),
+        nullable=False)
     started_at = sa.Column(sa.DateTime)
     completed_at = sa.Column(sa.DateTime)
     # XXX(akscram): Do we need to explicitly store a name of the
@@ -80,11 +83,7 @@ class Deployment(BASE, RallyBase):
         nullable=False,
     )
 
-    # NOTE(boris-42): This is pickled rally.object.Endpoint object
-    admin = sa.Column(types.PickleType, nullable=True)
-
-    # NOTE(boris-42): This is list of pickled rally.object.Endpoint objects
-    users = sa.Column(types.PickleType, default=[], nullable=False)
+    credentials = sa.Column(types.PickleType, nullable=False)
 
     status = sa.Column(
         sa.Enum(*consts.DeployStatus, name="enum_deploy_status"),
@@ -99,6 +98,24 @@ class Deployment(BASE, RallyBase):
         remote_side=[uuid],
         foreign_keys=parent_uuid,
     )
+
+    # TODO(rpromyshlennikov): remove admin after credentials refactoring
+    @property
+    def admin(self):
+        return self.credentials["admin"]
+
+    @admin.setter
+    def admin(self, value):
+        pass
+
+    # TODO(rpromyshlennikov): remove users after credentials refactoring
+    @property
+    def users(self):
+        return self.credentials["users"]
+
+    @users.setter
+    def users(self, value):
+        pass
 
 
 class Resource(BASE, RallyBase):
