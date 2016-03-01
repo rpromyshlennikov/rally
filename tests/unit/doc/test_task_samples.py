@@ -53,7 +53,7 @@ class TaskSampleTestCase(test.TestCase):
                         task_config = yaml.safe_load(api.Task.render_template
                                                      (task_file.read()))
                         eng = engine.TaskEngine(task_config,
-                                                     mock.MagicMock())
+                                                mock.MagicMock())
                         eng.validate()
                     except Exception:
                         print(traceback.format_exc())

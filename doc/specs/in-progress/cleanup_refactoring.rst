@@ -37,7 +37,7 @@ There are 5 use cases that require cleanup refactoring:
 #. Isolated task
 
    It is quite important to add ability to run few instances of Rally against
-   cloud simultanesouly (and one cleanup, won't affect the others)
+   cloud simultaneously (and one cleanup, won't affect the others)
 
 #. Testing that cleanups works
 
