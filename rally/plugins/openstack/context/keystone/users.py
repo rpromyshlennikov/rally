@@ -23,7 +23,6 @@ import six
 from rally.common import broker
 from rally.common.i18n import _
 from rally.common import logging
-from rally.common import objects
 from rally.common import utils as rutils
 from rally import consts
 from rally import exceptions
@@ -215,11 +214,15 @@ class UserGenerator(UserContextMixin, context.Context):
             user = client.create_user(username, password,
                                       "%s@email.me" % username,
                                       tenant_id, user_dom)
-            user_credential = objects.Credential(
-                client.auth_url, user.name, password,
-                self.context["tenants"][tenant_id]["name"],
-                consts.EndpointPermission.USER, client.region_name,
-                project_domain_name=project_dom, user_domain_name=user_dom,
+            user_credential = dict(
+                auth_url=client.auth_url,
+                username=user.name,
+                password=password,
+                tenant_name=self.context["tenants"][tenant_id]["name"],
+                permission=consts.EndpointPermission.USER,
+                region_name=client.region_name,
+                project_domain_name=project_dom,
+                user_domain_name=user_dom,
                 endpoint_type=self.credential.endpoint_type,
                 https_insecure=self.credential.insecure,
                 https_cacert=self.credential.cacert)

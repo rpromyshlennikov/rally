@@ -665,6 +665,8 @@ class Clients(object):
 
     def __init__(self, credential, api_info=None):
         self.credential = credential
+        if isinstance(credential, dict):
+            self.credential = objects.Credential(**credential)
         self.api_info = api_info or {}
         self.cache = {}
 
@@ -677,11 +679,11 @@ class Clients(object):
     def create_from_env(cls):
         creds = envutils.get_creds_from_env_vars()
         return cls(
-            objects.Credential(
-                creds["auth_url"],
-                creds["admin"]["username"],
-                creds["admin"]["password"],
-                creds["admin"]["tenant_name"],
+            dict(
+                auth_url=creds["auth_url"],
+                username=creds["admin"]["username"],
+                password=creds["admin"]["password"],
+                tenant_name=creds["admin"]["tenant_name"],
                 endpoint=creds["endpoint"],
                 region_name=creds["region_name"],
                 https_cacert=creds["https_cacert"],

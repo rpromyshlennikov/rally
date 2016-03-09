@@ -13,7 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from rally.common import objects
 from rally import consts
 from rally.deployment import engine
 
@@ -121,8 +120,10 @@ class ExistingCloud(engine.Engine):
     }
 
     def _create_credential(self, common, user, permission):
-        return objects.Credential(
-            common["auth_url"], user["username"], user["password"],
+        return dict(
+            auth_url=common["auth_url"],
+            username=user["username"],
+            password=user["password"],
             tenant_name=user.get("project_name", user.get("tenant_name")),
             permission=permission,
             region_name=common.get("region_name"),

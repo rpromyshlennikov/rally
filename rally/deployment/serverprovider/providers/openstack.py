@@ -21,7 +21,6 @@ import novaclient.exceptions
 
 from rally.common.i18n import _
 from rally.common import logging
-from rally.common import objects
 from rally.deployment.serverprovider import provider
 from rally import exceptions
 from rally import osclients
@@ -140,9 +139,11 @@ class OpenStackProvider(provider.ProviderFactory):
 
     def __init__(self, deployment, config):
         super(OpenStackProvider, self).__init__(deployment, config)
-        user_credential = objects.Credential(
-            config["auth_url"], config["user"],
-            config["password"], config["tenant"],
+        user_credential = dict(
+            auth_url=config["auth_url"],
+            username=config["user"],
+            password=config["password"],
+            tenant_name=config["tenant"],
             region_name=config.get("region"))
         clients = osclients.Clients(user_credential)
         self.nova = clients.nova()

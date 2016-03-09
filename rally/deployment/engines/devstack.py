@@ -19,7 +19,6 @@ import six
 
 from rally.common.i18n import _
 from rally.common import logging
-from rally.common import objects
 from rally import consts
 from rally.deployment import engine
 from rally.deployment.serverprovider import provider
@@ -126,10 +125,12 @@ class DevstackEngine(engine.Engine):
                                     stdin=local_conf)
             devstack_server.ssh.run("~/devstack/stack.sh")
 
-        admin_credential = objects.Credential(
-            "http://%s:5000/v2.0/" % self.servers[0].host, "admin",
-            self.local_conf["ADMIN_PASSWORD"], "admin",
-            consts.EndpointPermission.ADMIN)
+        admin_credential = dict(
+            auth_url="http://%s:5000/v2.0/" % self.servers[0].host,
+            username="admin",
+            password=self.local_conf["ADMIN_PASSWORD"],
+            tenant_name="admin",
+            permission=consts.EndpointPermission.ADMIN)
         return {"admin": admin_credential}
 
     def cleanup(self):
