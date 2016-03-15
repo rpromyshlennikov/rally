@@ -56,14 +56,9 @@ class Deployment(object):
         self._update({"config": config})
 
     def update_credentials(self, credentials):
-        admin = credentials.get("admin", {})
-        if admin:
-            admin = admin.to_dict(include_permission=True)
-
         self._update({
-            "admin": admin,
-            "users": [e.to_dict(include_permission=True)
-                      for e in credentials.get("users", [])]
+            "admin": credentials.get("admin", {}),
+            "users": credentials.get("users", [])
         })
 
     def set_started(self):
