@@ -15,7 +15,6 @@
 
 import mock
 
-from rally.common import objects
 from rally.deployment import engine
 from tests.unit import test
 
@@ -147,7 +146,7 @@ class LxcEngineTestCase(test.TestCase):
         with mock.patch.object(self.engine, "deployment", fake_deployment):
             credential = self.engine.deploy()
 
-        self.assertIsInstance(credential["admin"], objects.Credential)
+        self.assertIsInstance(credential["admin"], dict)
         lxc_host_calls = [
             mock.call(fake_servers[0], {"network": "10.128.128.0/28",
                                         "tunnel_to": ["1.1.1.1", "2.2.2.2"]}),

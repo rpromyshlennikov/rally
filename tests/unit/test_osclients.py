@@ -19,7 +19,6 @@ from keystoneclient import exceptions as keystone_exceptions
 import mock
 from oslo_config import cfg
 
-from rally.common import objects
 from rally import consts
 from rally import exceptions
 from rally import osclients
@@ -169,9 +168,13 @@ class OSClientsTestCase(test.TestCase):
 
     def setUp(self):
         super(OSClientsTestCase, self).setUp()
-        self.credential = objects.Credential("http://auth_url/v2.0", "use",
-                                             "pass", "tenant")
+        self.credential = dict(
+            auth_url="http://auth_url/v2.0",
+            username="use",
+            password="pass",
+            tenant_name="tenant")
         self.clients = osclients.Clients(self.credential, {})
+        self.credential = self.clients.credential
 
         self.fake_keystone = fakes.FakeKeystoneClient()
         self.fake_keystone.auth_token = mock.MagicMock()

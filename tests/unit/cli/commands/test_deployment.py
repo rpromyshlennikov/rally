@@ -20,7 +20,6 @@ import mock
 
 from rally.cli.commands import deployment
 from rally.cli import envutils
-from rally.common import objects
 from rally import consts
 from rally import exceptions
 from tests.unit import fakes
@@ -332,9 +331,10 @@ class DeploymentCommandsTestCase(test.TestCase):
     def test_deployment_check(self, mock_deployment_get,
                               mock_deployment_check, mock_print_list):
         deployment_id = "e87e4dca-b515-4477-888d-5f6103f13b42"
-        sample_credential = objects.Credential("http://192.168.1.1:5000/v2.0/",
-                                               "admin",
-                                               "adminpass").to_dict()
+        sample_credential = dict(
+            auth_url="http://192.168.1.1:5000/v2.0/",
+            username="admin",
+            password="adminpass")
         deployment = {"admin": sample_credential,
                       "users": [sample_credential]}
         mock_deployment_get.return_value = deployment
@@ -359,9 +359,10 @@ class DeploymentCommandsTestCase(test.TestCase):
     def test_deployment_check_raise(self, mock_deployment_get,
                                     mock_deployment_check):
         deployment_id = "e87e4dca-b515-4477-888d-5f6103f13b42"
-        sample_credential = objects.Credential("http://192.168.1.1:5000/v2.0/",
-                                               "admin",
-                                               "adminpass").to_dict()
+        sample_credential = dict(
+            auth_url="http://192.168.1.1:5000/v2.0/",
+            username="admin",
+            password="adminpass")
         sample_credential["not-exist-key"] = "error"
         mock_deployment_get.return_value = {"admin": sample_credential}
         refused = keystone_exceptions.ConnectionRefused()

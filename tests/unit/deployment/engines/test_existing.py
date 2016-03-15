@@ -62,7 +62,7 @@ class TestExistingCloud(test.TestCase):
         admin_credential.pop("type")
         admin_credential["endpoint"] = None
         admin_credential.update(admin_credential.pop("admin"))
-        self.assertEqual(admin_credential, credentials["admin"].to_dict())
+        self.assertEqual(admin_credential, credentials["admin"])
         self.assertEqual([], credentials["users"])
 
     def test_cleanup(self):
