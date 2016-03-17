@@ -14,7 +14,6 @@
 
 import mock
 
-from rally.common import objects
 from rally.plugins.openstack.context.sahara import sahara_input_data_sources
 from tests.unit import test
 
@@ -25,7 +24,10 @@ class SaharaInputDataSourcesTestCase(test.ScenarioTestCase):
 
     def setUp(self):
         super(SaharaInputDataSourcesTestCase, self).setUp()
-        credential = objects.Endpoint("foo_url", "user", "passwd")
+        credential = dict(
+            auth_url="foo_url",
+            username="user",
+            password="passwd")
         self.tenants_num = 2
         self.users_per_tenant = 2
         self.users = self.tenants_num * self.users_per_tenant

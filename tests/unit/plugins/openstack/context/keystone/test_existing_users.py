@@ -23,8 +23,7 @@ CTX = "rally.plugins.openstack.context"
 class ExistingUserTestCase(test.TestCase):
 
     @mock.patch("%s.keystone.existing_users.osclients.Clients" % CTX)
-    @mock.patch("%s.keystone.existing_users.objects.Credential" % CTX)
-    def test_setup(self, mock_credential, mock_clients):
+    def test_setup(self, mock_clients):
         user1 = mock.MagicMock(tenant_id="1")
         user2 = mock.MagicMock(tenant_id="1")
         user3 = mock.MagicMock(tenant_id="2")
@@ -47,7 +46,7 @@ class ExistingUserTestCase(test.TestCase):
         self.assertEqual(
             {
                 "id": user1.user_id,
-                "credential": mock_credential.return_value,
+                "credential": user1,
                 "tenant_id": user1.tenant_id
             },
             context["users"][0]

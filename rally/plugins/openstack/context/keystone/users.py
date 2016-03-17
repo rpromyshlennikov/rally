@@ -214,7 +214,8 @@ class UserGenerator(UserContextMixin, context.Context):
             user = client.create_user(username, password,
                                       "%s@email.me" % username,
                                       tenant_id, user_dom)
-            user_credential = dict(
+            user_credential = self.credential.copy()
+            user_credential.update(dict(
                 auth_url=client.auth_url,
                 username=user.name,
                 password=password,
@@ -222,10 +223,7 @@ class UserGenerator(UserContextMixin, context.Context):
                 permission=consts.EndpointPermission.USER,
                 region_name=client.region_name,
                 project_domain_name=project_dom,
-                user_domain_name=user_dom,
-                endpoint_type=self.credential.endpoint_type,
-                https_insecure=self.credential.insecure,
-                https_cacert=self.credential.cacert)
+                user_domain_name=user_dom))
             users.append({"id": user.id,
                           "credential": user_credential,
                           "tenant_id": tenant_id})

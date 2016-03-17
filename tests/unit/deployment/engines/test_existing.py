@@ -58,6 +58,7 @@ class TestExistingCloud(test.TestCase):
     def test_deploy(self):
         engine = existing.ExistingCloud(self.deployment)
         credentials = engine.deploy()
+        credentials["admin"].pop("permission")
         admin_credential = self.deployment["config"].copy()
         admin_credential.pop("type")
         admin_credential["endpoint"] = None

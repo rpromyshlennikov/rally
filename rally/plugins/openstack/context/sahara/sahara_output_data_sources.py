@@ -68,8 +68,8 @@ class SaharaOutputDataSources(context.Context):
                 }
                 self.setup_outputs_swift(swift, sahara, tenant_id,
                                          container_name,
-                                         user["credential"].username,
-                                         user["credential"].password)
+                                         user["credential"]["username"],
+                                         user["credential"]["password"])
             else:
                 self.setup_outputs_hdfs(sahara, tenant_id,
                                         self.config["output_url_prefix"])

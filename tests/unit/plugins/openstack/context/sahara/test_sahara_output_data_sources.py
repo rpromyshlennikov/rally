@@ -20,18 +20,14 @@ from tests.unit import test
 CTX = "rally.plugins.openstack.context.sahara"
 
 
-class FakeDict(object):
-    def __init__(self):
-        pass
-
-
 class SaharaOutputDataSourcesTestCase(test.ScenarioTestCase):
 
     def setUp(self):
         super(SaharaOutputDataSourcesTestCase, self).setUp()
-        fake_dict = FakeDict()
-        fake_dict.__dict__["username"] = "user"
-        fake_dict.__dict__["password"] = "passwd"
+        credentials = {
+            "username": "user",
+            "password": "passwd"
+        }
         self.tenants_num = 2
         self.users_per_tenant = 2
         self.users = self.tenants_num * self.users_per_tenant
@@ -46,7 +42,7 @@ class SaharaOutputDataSourcesTestCase(test.ScenarioTestCase):
             for j in range(self.users_per_tenant):
                 self.users_key.append({"id": "%s_%s" % (str(i), str(j)),
                                        "tenant_id": str(i),
-                                       "credential": fake_dict})
+                                       "credential": credentials})
 
         self.user_key = [{"id": i, "tenant_id": j, "credential": "credential"}
                          for j in range(self.tenants_num)
