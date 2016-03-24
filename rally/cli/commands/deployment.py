@@ -145,14 +145,27 @@ class DeploymentCommands(object):
     def list(self, deployment_list=None):
         """List existing deployments."""
 
-        headers = ["uuid", "created_at", "name", "status", "active"]
+        def trim_credential(cred):
+            max_len = 10
+            pattern = "{:.%s}..." % max_len
+            cred = str(cred)
+            cred = pattern.format(cred) if len(cred) > max_len else cred
+            return cred
+
+        headers = ["uuid", "created_at", "name", "status",
+                   "credentials_type", "credentials", "active"]
         current_deployment = envutils.get_global("RALLY_DEPLOYMENT")
         deployment_list = deployment_list or api.Deployment.list()
 
         table_rows = []
         if deployment_list:
             for t in deployment_list:
-                r = [str(t[column]) for column in headers[:-1]]
+                r = [str(t[column]) for column in headers[:-3]]
+                credentails_types, credentails = (
+                    zip(*t["credentials"]) if t["credentials"] else ([], []))
+                r.append("\n".join(credentails_types))
+                r.append("\n".join(trim_credential(cred)
+                                   for cred in credentails))
                 r.append("" if t["uuid"] != current_deployment else "*")
                 table_rows.append(utils.Struct(**dict(zip(headers, r))))
             cliutils.print_list(table_rows, headers,

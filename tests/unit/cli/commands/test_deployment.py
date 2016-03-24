@@ -128,6 +128,7 @@ class DeploymentCommandsTestCase(test.TestCase):
              "created_at": "03-12-2014",
              "name": "dep1",
              "status": "deploy->started",
+             "credentials": [],
              "active": "False"}]
 
         mock_deployment_list.return_value = fake_deployment_list
@@ -135,9 +136,12 @@ class DeploymentCommandsTestCase(test.TestCase):
 
         fake_deployment = fake_deployment_list[0]
         fake_deployment["active"] = ""
+        fake_deployment["credentials"] = ""
+        fake_deployment["credentials_type"] = ""
         mock_struct.assert_called_once_with(**fake_deployment)
 
-        headers = ["uuid", "created_at", "name", "status", "active"]
+        headers = ["uuid", "created_at", "name", "status",
+                   "credentials_type", "credentials", "active"]
         mock_print_list.assert_called_once_with([mock_struct()], headers,
                                                 sortby_index=headers.index(
                                                 "created_at"))
@@ -155,15 +159,52 @@ class DeploymentCommandsTestCase(test.TestCase):
                                  "created_at": "13-12-2014",
                                  "name": "dep2",
                                  "status": "deploy->finished",
+                                 "credentials": [],
                                  "active": "True"}]
         mock_deployment_list.return_value = fake_deployment_list
         self.deployment.list()
 
         fake_deployment = fake_deployment_list[0]
         fake_deployment["active"] = "*"
+        fake_deployment["credentials"] = ""
+        fake_deployment["credentials_type"] = ""
         mock_struct.assert_called_once_with(**fake_deployment)
 
-        headers = ["uuid", "created_at", "name", "status", "active"]
+        headers = ["uuid", "created_at", "name", "status",
+                   "credentials_type", "credentials", "active"]
+        mock_print_list.assert_called_once_with([mock_struct()], headers,
+                                                sortby_index=headers.index(
+                                                "created_at"))
+
+    @mock.patch("rally.cli.commands.deployment.cliutils.print_list")
+    @mock.patch("rally.cli.commands.deployment.utils.Struct")
+    @mock.patch("rally.cli.commands.deployment.envutils.get_global")
+    @mock.patch("rally.cli.commands.deployment.api.Deployment.list")
+    def test_list_multi_credentials_deployment(self, mock_deployment_list,
+                                               mock_get_global, mock_struct,
+                                               mock_print_list):
+        current_deployment_id = "26a3ce76-0efa-40e4-86e5-514574bd1ff6"
+        mock_get_global.return_value = current_deployment_id
+        fake_deployment_list = [
+            {"uuid": "fa34aea2-ae2e-4cf7-a072-b08d67466e3e",
+             "created_at": "03-12-2014",
+             "name": "dep1",
+             "status": "deploy->started",
+             "credentials": [["openstack", {"a": "a"}],
+                             ["zabbix", {"b": "b"}]],
+             "active": "False"}]
+
+        mock_deployment_list.return_value = fake_deployment_list
+        self.deployment.list()
+
+        fake_deployment = fake_deployment_list[0]
+        fake_deployment["active"] = ""
+        fake_deployment["credentials"] = "{'a': 'a'}\n{'b': 'b'}"
+        fake_deployment["credentials_type"] = "openstack\nzabbix"
+        mock_struct.assert_called_once_with(**fake_deployment)
+
+        headers = ["uuid", "created_at", "name", "status",
+                   "credentials_type", "credentials", "active"]
         mock_print_list.assert_called_once_with([mock_struct()], headers,
                                                 sortby_index=headers.index(
                                                 "created_at"))
