@@ -15,7 +15,6 @@
 
 from rally.common.i18n import _
 from rally.common import logging
-from rally.common import objects
 from rally import osclients
 from rally.plugins.openstack.context.keystone import users
 from rally.task import context
@@ -49,8 +48,7 @@ class ExistingUsers(users.UserContextMixin, context.Context):
         self.context["tenants"] = {}
 
         for user in self.config:
-            user_credential = objects.Credential(**user)
-            user_kclient = osclients.Clients(user_credential).keystone()
+            user_kclient = osclients.Clients(user).keystone()
 
             if user_kclient.tenant_id not in self.context["tenants"]:
                 self.context["tenants"][user_kclient.tenant_id] = {
@@ -59,7 +57,7 @@ class ExistingUsers(users.UserContextMixin, context.Context):
                 }
 
             self.context["users"].append({
-                "credential": user_credential,
+                "credential": user,
                 "id": user_kclient.user_id,
                 "tenant_id": user_kclient.tenant_id
             })

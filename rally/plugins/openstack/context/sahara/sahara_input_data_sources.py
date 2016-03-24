@@ -80,8 +80,8 @@ class SaharaInputDataSources(context.Context):
                 self.setup_inputs_swift(clients, tenant_id,
                                         self.config["input_url"],
                                         self.config["swift_files"],
-                                        user["credential"].username,
-                                        user["credential"].password)
+                                        user["credential"]["username"],
+                                        user["credential"]["password"])
             else:
                 self.setup_inputs(clients, tenant_id,
                                   self.config["input_type"],

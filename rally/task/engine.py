@@ -188,7 +188,7 @@ class TaskEngine(object):
             raise exceptions.InvalidTaskException(str(e))
 
         self.task = task
-        self.admin = admin and objects.Credential(**admin) or None
+        self.admin = admin
         self.existing_users = users or []
         self.abort_on_sla_failure = abort_on_sla_failure
 

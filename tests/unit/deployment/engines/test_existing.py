@@ -58,11 +58,12 @@ class TestExistingCloud(test.TestCase):
     def test_deploy(self):
         engine = existing.ExistingCloud(self.deployment)
         credentials = engine.deploy()
+        credentials["admin"].pop("permission")
         admin_credential = self.deployment["config"].copy()
         admin_credential.pop("type")
         admin_credential["endpoint"] = None
         admin_credential.update(admin_credential.pop("admin"))
-        self.assertEqual(admin_credential, credentials["admin"].to_dict())
+        self.assertEqual(admin_credential, credentials["admin"])
         self.assertEqual([], credentials["users"])
 
     def test_cleanup(self):

@@ -15,7 +15,6 @@
 
 import mock
 
-from rally.common import objects
 from rally import consts
 from rally import exceptions
 from rally.plugins.openstack.context.keystone import users
@@ -312,16 +311,18 @@ class UserGeneratorTestCase(test.ScenarioTestCase):
         wrapped_keystone = mock.MagicMock()
         mock_keystone.wrap.return_value = wrapped_keystone
 
-        credential = objects.Credential("foo_url", "foo", "foo_pass",
-                                        https_insecure=True,
-                                        https_cacert="cacert")
+        credential = dict(
+            auth_url="foo_url",
+            username="foo",
+            password="foo_pass",
+            https_insecure=True,
+            https_cacert="cacert")
         tmp_context = dict(self.context)
         tmp_context["config"]["users"] = {"tenants": 1,
                                           "users_per_tenant": 2,
                                           "resource_management_workers": 1}
         tmp_context["admin"]["credential"] = credential
 
-        credential_dict = credential.to_dict(False)
         user_list = [mock.MagicMock(id="id_%d" % i)
                      for i in range(self.users_num)]
         wrapped_keystone.create_user.side_effect = user_list
@@ -340,15 +341,15 @@ class UserGeneratorTestCase(test.ScenarioTestCase):
                 self.assertEqual(set(["id", "credential", "tenant_id"]),
                                  set(user.keys()))
 
-                user_credential_dict = user["credential"].to_dict(False)
+                user_credential_dict = user["credential"]
 
                 excluded_keys = ["auth_url", "username", "password",
                                  "tenant_name", "region_name",
                                  "project_domain_name",
                                  "admin_domain_name",
                                  "user_domain_name"]
-                for key in (set(credential_dict.keys()) - set(excluded_keys)):
-                    self.assertEqual(credential_dict[key],
+                for key in (set(credential.keys()) - set(excluded_keys)):
+                    self.assertEqual(credential[key],
                                      user_credential_dict[key])
 
             tenants_ids = []
@@ -362,8 +363,10 @@ class UserGeneratorTestCase(test.ScenarioTestCase):
 
     @mock.patch("%s.keystone" % CTX)
     def test_users_contains_correct_endpoint_type(self, mock_keystone):
-        credential = objects.Credential(
-            "foo_url", "foo", "foo_pass",
+        credential = dict(
+            auth_url="foo_url",
+            username="foo",
+            password="foo_pass",
             endpoint_type=consts.EndpointType.INTERNAL)
         config = {
             "config": {
@@ -381,11 +384,14 @@ class UserGeneratorTestCase(test.ScenarioTestCase):
         users_ = user_generator._create_users()
 
         for user in users_:
-            self.assertEqual("internal", user["credential"].endpoint_type)
+            self.assertEqual("internal", user["credential"]["endpoint_type"])
 
     @mock.patch("%s.keystone" % CTX)
     def test_users_contains_default_endpoint_type(self, mock_keystone):
-        credential = objects.Credential("foo_url", "foo", "foo_pass")
+        credential = dict(
+            auth_url="foo_url",
+            username="foo",
+            password="foo_pass")
         config = {
             "config": {
                 "users": {
@@ -402,4 +408,4 @@ class UserGeneratorTestCase(test.ScenarioTestCase):
         users_ = user_generator._create_users()
 
         for user in users_:
-            self.assertEqual("public", user["credential"].endpoint_type)
+            self.assertEqual("public", user["credential"]["endpoint_type"])

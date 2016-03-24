@@ -121,26 +121,32 @@ class DeploymentTestCase(test.TestCase):
         mock_deployment_update.return_value = self.deployment
         deploy = objects.Deployment(deployment=self.deployment)
         credentials = {
-            "admin": objects.Credential("url", "user", "pwd", "tenant",
-                                        consts.EndpointPermission.ADMIN),
+            "admin": dict(
+                auth_url="url",
+                username="user",
+                password="pwd",
+                tenant_name="tenant",
+                permission=consts.EndpointPermission.ADMIN),
             "users": [
-                objects.Credential("url1", "user1", "pwd1", "tenant1",
-                                   consts.EndpointPermission.USER),
-                objects.Credential("url2", "user2", "pwd2", "tenant2",
-                                   consts.EndpointPermission.USER),
+                dict(
+                    auth_url="url1",
+                    username="user1",
+                    password="pwd1",
+                    tenant_name="tenant1",
+                    permission=consts.EndpointPermission.USER),
+                dict(
+                    auth_url="url2",
+                    username="user2",
+                    password="pwd2",
+                    tenant_name="tenant2",
+                    permission=consts.EndpointPermission.USER),
             ]
         }
-
-        expected_users = [u.to_dict(include_permission=True)
-                          for u in credentials["users"]]
 
         deploy.update_credentials(credentials)
         mock_deployment_update.assert_called_once_with(
             self.deployment["uuid"],
-            {
-                "admin": credentials["admin"].to_dict(include_permission=True),
-                "users": expected_users
-            })
+            credentials)
 
     @mock.patch("rally.common.objects.deploy.db.deployment_update")
     def test_update_empty_credentials(self, mock_deployment_update):

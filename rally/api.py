@@ -123,7 +123,7 @@ class Deployment(object):
         :returns: Service list
         """
         # TODO(kun): put this work into objects.Deployment
-        clients = osclients.Clients(objects.Credential(**deployment["admin"]))
+        clients = osclients.Clients(deployment["admin"])
         return clients.services()
 
     @staticmethod
@@ -143,7 +143,7 @@ class Deployment(object):
         services = cls.service_list(deployment)
         users = deployment["users"]
         for endpoint_dict in users:
-            osclients.Clients(objects.Credential(**endpoint_dict)).keystone()
+            osclients.Clients(endpoint_dict).keystone()
 
         return services
 

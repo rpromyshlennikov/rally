@@ -28,7 +28,6 @@ from six.moves.urllib import parse
 from rally.common import db
 from rally.common.i18n import _
 from rally.common import logging
-from rally.common import objects
 from rally.common import utils
 from rally import exceptions
 from rally import osclients
@@ -103,7 +102,7 @@ class TempestConfig(utils.RandomNameGeneratorMixin):
         self.deployment = deployment
 
         self.credential = db.deployment_get(deployment)["admin"]
-        self.clients = osclients.Clients(objects.Credential(**self.credential))
+        self.clients = osclients.Clients(self.credential)
         self.keystone = self.clients.verified_keystone()
         self.available_services = self.clients.services().values()
 
@@ -327,7 +326,7 @@ class TempestResourcesContext(utils.RandomNameGeneratorMixin):
 
     def __init__(self, deployment, verification, conf_path):
         credential = db.deployment_get(deployment)["admin"]
-        self.clients = osclients.Clients(objects.Credential(**credential))
+        self.clients = osclients.Clients(credential)
         self.available_services = self.clients.services().values()
 
         self.verification = verification

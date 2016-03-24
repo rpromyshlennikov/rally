@@ -40,9 +40,9 @@ class SaharaInputDataSourcesTestCase(test.ScenarioTestCase):
                 self.users.append(
                     {"id": user_id,
                      "tenant_id": tenant_id,
-                     "credential": mock.Mock(auth_url="foo_url",
-                                             username=user_id + "_name",
-                                             password="foo_password")})
+                     "credential": dict(auth_url="foo_url",
+                                        username=user_id + "_name",
+                                        password="foo_password")})
 
         self.context.update({
             "config": {

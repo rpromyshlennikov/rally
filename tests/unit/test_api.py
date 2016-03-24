@@ -23,7 +23,6 @@ from keystoneclient import exceptions as keystone_exceptions
 import mock
 
 from rally import api
-from rally.common import objects
 from rally import consts
 from rally.deployment import engine
 from rally import exceptions
@@ -379,27 +378,30 @@ class DeploymentAPITestCase(BaseDeploymentTestCase):
 
     @mock.patch("rally.osclients.Keystone.create_client")
     def test_deployment_check(self, mock_keystone_create_client):
-        sample_credential = objects.Credential("http://192.168.1.1:5000/v2.0/",
-                                               "admin",
-                                               "adminpass").to_dict()
+        sample_credential = dict(
+            auth_url="http://192.168.1.1:5000/v2.0/",
+            username="admin",
+            password="adminpass")
         deployment = {"admin": sample_credential,
                       "users": [sample_credential]}
         api.Deployment.check(deployment)
         mock_keystone_create_client.assert_called_with()
 
     def test_deployment_check_raise(self):
-        sample_credential = objects.Credential("http://192.168.1.1:5000/v2.0/",
-                                               "admin",
-                                               "adminpass").to_dict()
+        sample_credential = dict(
+            auth_url="http://192.168.1.1:5000/v2.0/",
+            username="admin",
+            password="adminpass")
         sample_credential["not-exist-key"] = "error"
         deployment = {"admin": sample_credential}
         self.assertRaises(TypeError, api.Deployment.check, deployment)
 
     @mock.patch("rally.osclients.Clients.services")
     def test_deployment_check_connect_failed(self, mock_clients_services):
-        sample_credential = objects.Credential("http://192.168.1.1:5000/v2.0/",
-                                               "admin",
-                                               "adminpass").to_dict()
+        sample_credential = dict(
+            auth_url="http://192.168.1.1:5000/v2.0/",
+            username="admin",
+            password="adminpass")
         deployment = {"admin": sample_credential}
         refused = keystone_exceptions.ConnectionRefused()
         mock_clients_services.side_effect = refused

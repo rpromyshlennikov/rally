@@ -27,7 +27,6 @@ from novaclient import exceptions as nova_exceptions
 import six
 from swiftclient import exceptions as swift_exceptions
 
-from rally.common import objects
 from rally.common import utils as rally_utils
 from rally import consts
 from rally.task import context
@@ -1476,11 +1475,11 @@ class FakeClients(object):
         self._murano = None
         self._monasca = None
         self._ec2 = None
-        self._credential = credential_ or objects.Credential(
-            "http://fake.example.org:5000/v2.0/",
-            "fake_username",
-            "fake_password",
-            "fake_tenant_name")
+        self._credential = credential_ or dict(
+            auth_url="http://fake.example.org:5000/v2.0/",
+            username="fake_username",
+            password="fake_password",
+            tenant_name="fake_tenant_name")
 
     def keystone(self):
         if not self._keystone:
@@ -1667,11 +1666,19 @@ class FakeUserContext(FakeContext):
 
     admin = {
         "id": "adminuuid",
-        "credential": objects.Credential("aurl", "aname", "apwd", "atenant")
+        "credential": {
+            "auth_url": "aurl",
+            "username": "aname",
+            "password": "apwd",
+            "tenant_name": "atenant"}
     }
     user = {
         "id": "uuid",
-        "credential": objects.Credential("url", "name", "pwd", "tenant"),
+        "credential": {
+            "auth_url": "url",
+            "username": "name",
+            "password": "pwd",
+            "tenant_name": "tenant"},
         "tenant_id": "uuid"
     }
     tenants = {"uuid": {"name": "tenant"}}

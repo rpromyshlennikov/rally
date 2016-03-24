@@ -23,7 +23,6 @@ from novaclient import exceptions as nova_exc
 import six
 
 from rally.common.i18n import _
-from rally.common import objects
 from rally import consts
 from rally import exceptions
 from rally import osclients
@@ -485,8 +484,7 @@ def required_services(config, clients, deployment, *required_services):
     available_services = list(clients.services().values())
 
     if consts.Service.NOVA_NET in required_services:
-        nova = osclients.Clients(
-            objects.Credential(**deployment["admin"])).nova()
+        nova = osclients.Clients(deployment["admin"]).nova()
         for service in nova.services.list():
             if (service.binary == consts.Service.NOVA_NET and
                     service.status == "enabled"):
@@ -531,8 +529,7 @@ def required_cinder_services(config, clients, deployment, service_name):
     :param service_name: Cinder service name
     """
 
-    admin_client = osclients.Clients(
-        objects.Credential(**deployment["admin"])).cinder()
+    admin_client = osclients.Clients(deployment["admin"]).cinder()
 
     for service in admin_client.services.list():
         if (service.binary == six.text_type(service_name) and
@@ -552,7 +549,7 @@ def required_clients(config, clients, deployment, *components, **kwargs):
                      admin - bool, whether to use admin clients
     """
     if kwargs.get("admin", False):
-        clients = osclients.Clients(objects.Credential(**deployment["admin"]))
+        clients = osclients.Clients(deployment["admin"])
 
     for client_component in components:
         try:
