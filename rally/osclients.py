@@ -21,10 +21,10 @@ from six.moves.urllib import parse
 from rally.cli import envutils
 from rally.common.i18n import _
 from rally.common import logging
-from rally.common import objects
 from rally.common.plugin import plugin
 from rally import consts
 from rally import exceptions
+from rally.plugins.openstack import credentials
 
 
 CONF = cfg.CONF
@@ -70,7 +70,7 @@ class OSClient(plugin.Plugin):
     def __init__(self, credential, api_info, cache_obj):
         self.credential = credential
         if isinstance(credential, dict):
-            self.credential = objects.Credential(**credential)
+            self.credential = credentials.OpenStackCredentials(credential)
         self.api_info = api_info
         self.cache = cache_obj
 
@@ -699,7 +699,7 @@ class Clients(object):
     def __init__(self, credential, api_info=None):
         self.credential = credential
         if isinstance(credential, dict):
-            self.credential = objects.Credential(**credential)
+            self.credential = credentials.OpenStackCredentials(credential)
         self.api_info = api_info or {}
         self.cache = {}
 

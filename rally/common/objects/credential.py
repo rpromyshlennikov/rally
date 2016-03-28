@@ -39,6 +39,11 @@ class Credential(object):
         self.endpoint = endpoint
         self.insecure = https_insecure
         self.cacert = https_cacert
+        # NOTE(rpromyshlennikov): we cannot remove it
+        # because it used in some gate tests now
+        import warnings  # import this library only when it required
+        warnings.warn("Credential is deprecated since Rally 0.3.3. "
+                      "Please use rally.plugins.openstack.credentials instead")
 
     def to_dict(self, include_permission=False):
         dct = {"auth_url": self.auth_url, "username": self.username,

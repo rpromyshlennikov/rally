@@ -394,7 +394,8 @@ class DeploymentAPITestCase(BaseDeploymentTestCase):
             password="adminpass")
         sample_credential["not-exist-key"] = "error"
         deployment = {"admin": sample_credential}
-        self.assertRaises(TypeError, api.Deployment.check, deployment)
+        self.assertRaises(jsonschema.ValidationError, api.Deployment.check,
+                          deployment)
 
     @mock.patch("rally.osclients.Clients.services")
     def test_deployment_check_connect_failed(self, mock_clients_services):
