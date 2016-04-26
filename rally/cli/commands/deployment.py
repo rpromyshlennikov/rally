@@ -126,12 +126,14 @@ class DeploymentCommands(object):
         """
         api.Deployment.recreate(deployment)
 
+    @cliutils.args("--force", action="store_true",
+                   help="Destroy deployment without user confirmation")
     @cliutils.args("--deployment", dest="deployment", type=str,
                    metavar="<uuid>", required=False,
                    help="UUID or name of the deployment.")
     @envutils.with_default_deployment()
     @plugins.ensure_plugins_are_loaded
-    def destroy(self, deployment=None):
+    def destroy(self, deployment=None, force=False):
         """Destroy existing deployment.
 
         This will delete all containers, virtual machines, OpenStack
@@ -140,8 +142,18 @@ class DeploymentCommands(object):
         Rally database.
 
         :param deployment: UUID or name of the deployment
+        :param force: destroy without confirmation
         """
-        api.Deployment.destroy(deployment)
+        msg = ("This will delete deployment %s and "
+               "all information related to it will be deleted too. "
+               "Are you sure?" % deployment)
+        try:
+            if force or cliutils.user_confirm(msg):
+                api.Deployment.destroy(deployment)
+            else:
+                print("Deployment has not changed.")
+        except EOFError:
+            print("Unable to ask for confirmation. Please use --force option.")
 
     def list(self, deployment_list=None):
         """List existing deployments."""

@@ -21,6 +21,7 @@ import mock
 from rally.cli.commands import deployment
 from rally.cli import envutils
 from rally.common import objects
+from rally.common import utils
 from rally import consts
 from rally import exceptions
 from tests.unit import fakes
@@ -109,10 +110,41 @@ class DeploymentCommandsTestCase(test.TestCase):
                           self.deployment.recreate, None)
 
     @mock.patch("rally.cli.commands.deployment.api.Deployment.destroy")
-    def test_destroy(self, mock_deployment_destroy):
+    @mock.patch("rally.cli.cliutils.user_confirm")
+    def test_destroy(self, mock_user_confirm, mock_deployment_destroy):
+        mock_user_confirm.return_value = True
         deployment_id = "53fd0273-60ce-42e5-a759-36f1a683103e"
         self.deployment.destroy(deployment_id)
         mock_deployment_destroy.assert_called_once_with(deployment_id)
+
+    @mock.patch("rally.cli.commands.deployment.api.Deployment.destroy")
+    @mock.patch("rally.cli.cliutils.user_confirm")
+    def test_destroy_negative(self, mock_user_confirm,
+                              mock_deployment_destroy):
+        mock_user_confirm.return_value = False
+        deployment_id = "53fd0273-60ce-42e5-a759-36f1a683103e"
+        self.deployment.destroy(deployment_id)
+        self.assertFalse(mock_deployment_destroy.called)
+
+    @mock.patch("rally.cli.commands.deployment.api.Deployment.destroy")
+    @mock.patch("rally.cli.cliutils.user_confirm")
+    def test_destroy_force(self, mock_user_confirm, mock_deployment_destroy):
+        deployment_id = "53fd0273-60ce-42e5-a759-36f1a683103e"
+        self.deployment.destroy(deployment_id, force=True)
+        mock_deployment_destroy.assert_called_once_with(deployment_id)
+        self.assertFalse(mock_user_confirm.called)
+
+    @mock.patch("rally.cli.commands.deployment.api.Deployment.destroy")
+    @mock.patch("rally.cli.cliutils.user_confirm")
+    def test_destroy_on_confirm_raising(self, mock_user_confirm,
+                                        mock_deployment_destroy):
+        deployment_id = "53fd0273-60ce-42e5-a759-36f1a683103e"
+        mock_user_confirm.side_effect = EOFError
+        with utils.StdOutCapture() as output:
+            self.deployment.destroy(deployment_id)
+        self.assertFalse(mock_deployment_destroy.called)
+        msg = "Unable to ask for confirmation. Please use --force option."
+        self.assertEqual(msg, output.getvalue().strip())
 
     @mock.patch("rally.cli.commands.deployment.envutils.get_global")
     def test_destroy_no_deployment_id(self, mock_get_global):

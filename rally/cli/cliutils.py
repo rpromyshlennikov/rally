@@ -668,3 +668,35 @@ complete -o filenames -F _rally rally
             completion.append("""    OPTS["{cat}_{cmd}"]="{args}"\n""".format(
                 cat=category, cmd=command_name, args=args))
     return bash_data % {"data": "".join(sorted(completion))}
+
+
+def user_confirm(question, default="no", out=sys.stdout):
+    """Ask a yes/no question via input() and return confirmation.
+
+    :param question: is a string that is presented to the user
+    :param default: is the presumed answer if the user just hits <Enter>.
+        It must be "yes", "no" (by default) or None (meaning
+        an answer is required of the user).
+    :param out: stream to write output to.
+
+    :returns: boolean: is confirmed of not
+    """
+    valid = {"yes", "y", "no", "n"}
+    if default is None:
+        prompt = " [y/n] "
+    elif default == "yes":
+        prompt = " [Y/n] "
+    elif default == "no":
+        prompt = " [y/N] "
+    else:
+        raise ValueError("invalid default answer: '%s'" % default)
+
+    while True:
+        out.write("%s%s " % (question, prompt))
+        choice = six.moves.input().lower()
+        if default is not None and choice == "":
+            return default in ("yes", "y")
+        elif choice in valid:
+            return choice in ("yes", "y")
+        else:
+            out.write("Please respond with 'yes' or 'no' (or 'y' or 'n').\n")

@@ -15,6 +15,7 @@
 
 import json
 import re
+import tempfile
 import unittest
 
 from tests.functional import utils
@@ -59,7 +60,18 @@ class DeploymentTestCase(unittest.TestCase):
         self.rally.env.update(utils.TEST_ENV)
         self.rally("deployment create --name t_create_env --fromenv")
         self.assertIn("t_create_env", self.rally("deployment list"))
-        self.rally("deployment destroy")
+        with tempfile.TemporaryFile("r+") as confirm_file:
+            confirm_file.write("Y\n")
+            confirm_file.seek(0)
+            self.rally("deployment destroy",
+                       stdin=confirm_file)
+        self.assertNotIn("t_create_env", self.rally("deployment list"))
+
+    def test_destroy_force(self):
+        self.rally.env.update(utils.TEST_ENV)
+        self.rally("deployment create --name t_create_env --fromenv")
+        self.assertIn("t_create_env", self.rally("deployment list"))
+        self.rally("deployment destroy --force")
         self.assertNotIn("t_create_env", self.rally("deployment list"))
 
     def test_check_success(self):

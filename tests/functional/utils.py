@@ -156,7 +156,7 @@ class Rally(object):
 
     def __call__(self, cmd, getjson=False, report_path=None, raw=False,
                  suffix=None, extension=None, keep_old=False,
-                 write_report=True):
+                 write_report=True, stdin=None):
         """Call rally in the shell
 
         :param cmd: rally command
@@ -166,13 +166,17 @@ class Rally(object):
             written to file with passed file name
         :param raw: don't write command itself to report file. Only output
             will be written
+        :param stdin: input for rally command
         """
 
         if not isinstance(cmd, list):
             cmd = cmd.split(" ")
         try:
             output = encodeutils.safe_decode(subprocess.check_output(
-                self.args + cmd, stderr=subprocess.STDOUT, env=self.env))
+                self.args + cmd,
+                stdin=stdin,
+                stderr=subprocess.STDOUT,
+                env=self.env))
 
             if write_report:
                 if not report_path:

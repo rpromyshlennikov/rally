@@ -216,6 +216,7 @@ class MigrationWalkTestCase(rtest.DBTestCase,
     def setUp(self):
         super(MigrationWalkTestCase, self).setUp()
         self.engine = api.get_engine()
+        db.schema_downgrade(db.sqlalchemy.api.INITIAL_REVISION_UUID)
 
     def assertColumnExists(self, engine, table, column):
         t = db_utils.get_table(engine, table)

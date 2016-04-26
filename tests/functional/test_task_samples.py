@@ -73,7 +73,7 @@ class TestTaskSamples(unittest.TestCase):
             "password": ctx["users"][0]["credential"].password,
             "tenant_name": ctx["users"][0]["credential"].tenant_name}]
 
-        rally("deployment destroy MAIN", write_report=False)
+        rally("deployment destroy --force MAIN", write_report=False)
         deployment_cfg = os.path.join(rally.tmp_dir, "new_deployment.json")
         with open(deployment_cfg, "w") as f:
             f.write(json.dumps(config))

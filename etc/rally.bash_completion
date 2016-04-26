@@ -21,7 +21,7 @@ _rally()
     OPTS["deployment_check"]="--deployment"
     OPTS["deployment_config"]="--deployment"
     OPTS["deployment_create"]="--name --fromenv --filename --no-use"
-    OPTS["deployment_destroy"]="--deployment"
+    OPTS["deployment_destroy"]="--force --deployment"
     OPTS["deployment_list"]=""
     OPTS["deployment_recreate"]="--deployment"
     OPTS["deployment_show"]="--deployment"

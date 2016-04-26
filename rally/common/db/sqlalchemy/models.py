@@ -141,7 +141,7 @@ class Resource(BASE, RallyBase):
 
     deployment_uuid = sa.Column(
         sa.String(36),
-        sa.ForeignKey(Deployment.uuid),
+        sa.ForeignKey(Deployment.uuid, ondelete="CASCADE"),
         nullable=False,
     )
     deployment = sa.orm.relationship(
@@ -172,7 +172,7 @@ class Task(BASE, RallyBase):
 
     deployment_uuid = sa.Column(
         sa.String(36),
-        sa.ForeignKey(Deployment.uuid),
+        sa.ForeignKey(Deployment.uuid, ondelete="CASCADE"),
         nullable=False,
     )
 
@@ -193,7 +193,8 @@ class TaskResult(BASE, RallyBase):
     key = sa.Column(sa_types.MutableJSONEncodedDict, nullable=False)
     data = sa.Column(sa_types.BigMutableJSONEncodedDict, nullable=False)
 
-    task_uuid = sa.Column(sa.String(36), sa.ForeignKey("tasks.uuid"))
+    task_uuid = sa.Column(sa.String(36),
+                          sa.ForeignKey("tasks.uuid", ondelete="CASCADE"))
     task = sa.orm.relationship(Task,
                                backref=sa.orm.backref("results"),
                                foreign_keys=task_uuid,
@@ -213,7 +214,7 @@ class Verification(BASE, RallyBase):
 
     deployment_uuid = sa.Column(
         sa.String(36),
-        sa.ForeignKey(Deployment.uuid),
+        sa.ForeignKey(Deployment.uuid, ondelete="CASCADE"),
         nullable=False,
     )
 
@@ -238,7 +239,8 @@ class VerificationResult(BASE, RallyBase):
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
 
     verification_uuid = sa.Column(sa.String(36),
-                                  sa.ForeignKey("verifications.uuid"))
+                                  sa.ForeignKey("verifications.uuid",
+                                                ondelete="CASCADE"))
 
     data = sa.Column(sa_types.BigMutableJSONEncodedDict, nullable=False)
 

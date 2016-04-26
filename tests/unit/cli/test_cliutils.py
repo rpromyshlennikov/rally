@@ -391,6 +391,59 @@ class CliUtilsTestCase(test.TestCase):
             [self.TestObj()], ["x"],
             field_labels=["x", "y"], sortby_index=None, out=out)
 
+    @ddt.data(
+        {"args": ("?",),
+         "kwargs": {"default": None, "user_input": ["yes"]},
+         "expected": (True, "? [y/n]")},
+        {"args": ("?",),
+         "kwargs": {"default": None, "user_input": ["invalid", "yes"]},
+         "expected": (True,
+                      "? [y/n]  "
+                      "Please respond with 'yes' or 'no' (or 'y' or 'n').\n"
+                      "? [y/n]")},
+        {"args": ("?",),
+         "kwargs": {"default": None, "user_input": ["no"]},
+         "expected": (False, "? [y/n]")},
+        {"args": ("?",),
+         "kwargs": {"default": None, "user_input": ["N"]},
+         "expected": (False, "? [y/n]")},
+        {"args": ("?",),
+         "kwargs": {"default": "yes", "user_input": ["yes"]},
+         "expected": (True, "? [Y/n]")},
+        {"args": ("?",),
+         "kwargs": {"default": "yes", "user_input": ["y"]},
+         "expected": (True, "? [Y/n]")},
+        {"args": ("?",),
+         "kwargs": {"default": "yes", "user_input": ["no"]},
+         "expected": (False, "? [Y/n]")},
+        {"args": ("?",),
+         "kwargs": {"default": "yes", "user_input": [""]},
+         "expected": (True, "? [Y/n]")},
+        {"args": ("?",),
+         "kwargs": {"default": "no", "user_input": ["yes"]},
+         "expected": (True, "? [y/N]")},
+        {"args": ("?",),
+         "kwargs": {"default": "no", "user_input": ["no"]},
+         "expected": (False, "? [y/N]")},
+        {"args": ("?",),
+         "kwargs": {"default": "no", "user_input": [""]},
+         "expected": (False, "? [y/N]")},
+    )
+    @ddt.unpack
+    @mock.patch("rally.cli.cliutils.six.moves.input")
+    def test_user_confirm(self, mock_input, args, kwargs, expected):
+        user_input = kwargs.pop("user_input")
+        out = moves.StringIO()
+        kwargs["out"] = out
+        mock_input.side_effect = user_input
+        result = cliutils.user_confirm(*args, **kwargs)
+        self.assertEqual(expected[1], out.getvalue().strip())
+        self.assertEqual(expected[0], result)
+
+    def test_user_confirm_raises(self):
+        self.assertRaises(ValueError,
+                          cliutils.user_confirm, "?", default="invalid")
+
 
 class ValidateArgsTest(test.TestCase):
 

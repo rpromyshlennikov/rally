@@ -54,7 +54,7 @@ Functional tests
 *Files: /tests/functional/**
 
 The goal of `functional tests <https://en.wikipedia.org/wiki/Functional_testing>`_ is to check that everything works well together.
-Fuctional tests use Rally API only and check responses without touching internal parts.
+Functional tests use Rally API only and check responses without touching internal parts.
 
 To run functional tests locally::
 
